@@ -1,0 +1,45 @@
+Author: Christian Heimes <christian@python.org>
+Description: bpo-46114: Fix OpenSSL version check for 3.0.1 (GH-30170)
+Origin: upstream, https://github.com/python/cpython/commit/2985feac4e02d590bb78bcce9e30864be53280ac
+
+Index: python2.7-2.7.18/Lib/test/test_ssl.py
+===================================================================
+--- python2.7-2.7.18.orig/Lib/test/test_ssl.py
++++ python2.7-2.7.18/Lib/test/test_ssl.py
+@@ -373,13 +373,17 @@ class BasicSocketTests(unittest.TestCase
+         self.assertLessEqual(patch, 63)
+         self.assertGreaterEqual(status, 0)
+         self.assertLessEqual(status, 15)
+-        # Version string as returned by {Open,Libre}SSL, the format might change
+-        if IS_LIBRESSL:
+-            self.assertTrue(s.startswith("LibreSSL {:d}".format(major)),
+-                            (s, t, hex(n)))
++
++        libressl_ver = "LibreSSL {}".format(major)
++        if major >= 3:
++            # 3.x uses 0xMNN00PP0L
++            openssl_ver = "OpenSSL {}.{}.{}".format(major, minor, patch)
+         else:
+-            self.assertTrue(s.startswith("OpenSSL {:d}.{:d}.{:d}".format(major, minor, fix)),
+-                            (s, t))
++            openssl_ver = "OpenSSL {}.{}.{}".format(major, minor, fix)
++        self.assertTrue(
++            s.startswith((openssl_ver, libressl_ver)),
++            (s, t, hex(n))
++        )
+ 
+     @support.cpython_only
+     def test_refcycle(self):
+Index: python2.7-2.7.18/Tools/ssl/multissltests.py
+===================================================================
+--- python2.7-2.7.18.orig/Tools/ssl/multissltests.py
++++ python2.7-2.7.18/Tools/ssl/multissltests.py
+@@ -47,7 +47,7 @@ OPENSSL_OLD_VERSIONS = [
+ 
+ OPENSSL_RECENT_VERSIONS = [
+     "1.1.1k",
+-    # "3.0.0-alpha14"
++    "3.0.1",
+ ]
+ 
+ LIBRESSL_OLD_VERSIONS = [

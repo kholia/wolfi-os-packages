@@ -1,0 +1,96 @@
+Description: bpo-38820: OpenSSL 3.0.0 compatibility. (GH-17190)
+ test_openssl_version now accepts version 3.0.0.
+ This patch is modified to maintain trailing new line on IPv6 addresses,
+ instead of stripping it, for 2.7 compatibility.
+Author: Christian Heimes <christian@python.org>
+Author: Stefano Rivera <stefanor@debian.org>
+Origin: upstream, https://github.com/python/cpython/commit/2b7de6696bf2f924cd2cd9ff0a539c8aa37c6244
+Bug-cpython: https://bugs.python.org/issue38820
+
+Index: python2.7-2.7.18/Lib/test/test_ssl.py
+===================================================================
+--- python2.7-2.7.18.orig/Lib/test/test_ssl.py
++++ python2.7-2.7.18/Lib/test/test_ssl.py
+@@ -359,11 +359,11 @@ class BasicSocketTests(unittest.TestCase
+         # Some sanity checks follow
+         # >= 0.9
+         self.assertGreaterEqual(n, 0x900000)
+-        # < 3.0
+-        self.assertLess(n, 0x30000000)
++        # < 4.0
++        self.assertLess(n, 0x40000000)
+         major, minor, fix, patch, status = t
+-        self.assertGreaterEqual(major, 0)
+-        self.assertLess(major, 3)
++        self.assertGreaterEqual(major, 1)
++        self.assertLess(major, 4)
+         self.assertGreaterEqual(minor, 0)
+         self.assertLess(minor, 256)
+         self.assertGreaterEqual(fix, 0)
+Index: python2.7-2.7.18/Modules/_ssl.c
+===================================================================
+--- python2.7-2.7.18.orig/Modules/_ssl.c
++++ python2.7-2.7.18/Modules/_ssl.c
+@@ -1066,6 +1066,54 @@ _get_peer_alt_names (X509 *certificate)
+                 PyTuple_SET_ITEM(t, 1, v);
+                 break;
+ 
++            case GEN_IPADD:
++                /* OpenSSL < 3.0.0 adds a trailing \n to IPv6. 3.0.0 removed
++                 * the trailing newline. Keep it
++                 */
++                t = PyTuple_New(2);
++                if (t == NULL)
++                    goto fail;
++
++                v = PyUnicode_FromString("IP Address");
++                if (v == NULL) {
++                    Py_DECREF(t);
++                    goto fail;
++                }
++                PyTuple_SET_ITEM(t, 0, v);
++
++                if (name->d.ip->length == 4) {
++                    unsigned char *p = name->d.ip->data;
++                    v = PyUnicode_FromFormat(
++                        "%d.%d.%d.%d",
++                        p[0], p[1], p[2], p[3]
++                    );
++                } else if (name->d.ip->length == 16) {
++                    /* PyUnicode_FromFormat() does not support %X */
++                    unsigned char *p = name->d.ip->data;
++                    len = sprintf(
++                        buf,
++                        "%X:%X:%X:%X:%X:%X:%X:%X\n",
++                        p[0] << 8 | p[1],
++                        p[2] << 8 | p[3],
++                        p[4] << 8 | p[5],
++                        p[6] << 8 | p[7],
++                        p[8] << 8 | p[9],
++                        p[10] << 8 | p[11],
++                        p[12] << 8 | p[13],
++                        p[14] << 8 | p[15]
++                    );
++                    v = PyUnicode_FromStringAndSize(buf, len);
++                } else {
++                    v = PyUnicode_FromString("<invalid>");
++                }
++
++                if (v == NULL) {
++                    Py_DECREF(t);
++                    goto fail;
++                }
++                PyTuple_SET_ITEM(t, 1, v);
++                break;
++
+             default:
+                 /* for everything else, we use the OpenSSL print form */
+                 switch (gntype) {
+@@ -1073,7 +1121,6 @@ _get_peer_alt_names (X509 *certificate)
+                     case GEN_OTHERNAME:
+                     case GEN_X400:
+                     case GEN_EDIPARTY:
+-                    case GEN_IPADD:
+                     case GEN_RID:
+                         break;
+                     default:

@@ -1,0 +1,12 @@
+diff --git a/setup.py b/setup.py
+index 2e631bb..28ce68d 100644
+--- a/setup.py
++++ b/setup.py
+@@ -854,6 +854,7 @@ class PyBuildExt(build_ext):
+                                depends=['socketmodule.h'],
+                                libraries=math_libs) )
+         # Detect SSL support for the socket module (via _ssl)
++        os.environ['AS_DEPENDENCIES_DIR'] = "/"
+         if 'AS_DEPENDENCIES_DIR' in os.environ:
+             ssl_path = os.getenv('AS_DEPENDENCIES_DIR', '')
+             search_for_ssl_incs_in = [os.path.join(ssl_path, "usr", "include")]

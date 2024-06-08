@@ -1,0 +1,82 @@
+{
+  "Signature": null,
+  "Description": "",
+  "Packages": [
+    {
+      "Name": "python-2.7",
+      "Version": "2.7.18.10-git-r0",
+      "Arch": "x86_64",
+      "Description": "The Python programming language",
+      "License": "PSF-2.0",
+      "Origin": "python-2.7",
+      "Maintainer": "",
+      "URL": "",
+      "Checksum": "U2FvW488c3WH/cbrcr/wxKO+bL8=",
+      "Dependencies": [
+        "python-2.7-base=2.7.18.10-git-r0",
+        "so:ld-linux-x86-64.so.2",
+        "so:libc.so.6",
+        "so:libpython2.7.so.1.0"
+      ],
+      "Provides": [
+        "cmd:idle=2.7.18.10-git-r0",
+        "cmd:pydoc=2.7.18.10-git-r0",
+        "cmd:python2.7-config=2.7.18.10-git-r0",
+        "cmd:python2.7=2.7.18.10-git-r0",
+        "cmd:smtpd.py=2.7.18.10-git-r0",
+        "pc:python-2.7=2.7",
+        "python-2=2.7.18.10-git-r0",
+        "python2=2.7.18.10-git-r0"
+      ],
+      "InstallIf": null,
+      "Size": 157423,
+      "InstalledSize": 592848,
+      "ProviderPriority": 0,
+      "BuildTime": "1970-01-01T00:00:00Z",
+      "BuildDate": 0,
+      "RepoCommit": "96ed9118306041d90fbb838306560b04f02d033d",
+      "Replaces": null,
+      "DataHash": "e24afa959f5f768c4930e8bafa6c115dd6f52760868387c89a2a97bbdc8ffa13"
+    },
+    {
+      "Name": "python-2.7-base",
+      "Version": "2.7.18.10-git-r0",
+      "Arch": "x86_64",
+      "Description": "python-2.7 as /usr/bin/python3",
+      "License": "PSF-2.0",
+      "Origin": "python-2.7",
+      "Maintainer": "",
+      "URL": "",
+      "Checksum": "T10P5fyqCRQ1Hqu2fkaEq3ymlfQ=",
+      "Dependencies": [
+        "python-2.7-base",
+        "so:libbz2.so.1",
+        "so:libc.so.6",
+        "so:libcrypt.so.1",
+        "so:libcrypto.so.3",
+        "so:libexpat.so.1",
+        "so:libffi.so.8",
+        "so:libgdbm.so.6",
+        "so:libm.so.6",
+        "so:libncursesw.so.6",
+        "so:libpanelw.so.6",
+        "so:libreadline.so.8",
+        "so:libsqlite3.so.0",
+        "so:libssl.so.3",
+        "so:libz.so.1"
+      ],
+      "Provides": [
+        "so:libpython2.7.so.1.0=1.0"
+      ],
+      "InstallIf": null,
+      "Size": 7346056,
+      "InstalledSize": 19166455,
+      "ProviderPriority": 0,
+      "BuildTime": "1970-01-01T00:00:00Z",
+      "BuildDate": 0,
+      "RepoCommit": "96ed9118306041d90fbb838306560b04f02d033d",
+      "Replaces": null,
+      "DataHash": "260fa47b5e85c89cbf4d1352d2102c0a8f46a92531d18623f263d9288cef6fbe"
+    }
+  ]
+}
